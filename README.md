@@ -1,7 +1,6 @@
 
 <p align="center">
   <h1 align="center">PanoGS-SLAM</h1>
-  <h3 align="center">Panoramic 3D Gaussian Splatting SLAM</h3>
 
   <p align="center">
     <a href="https://yongxuqixiang.github.io/yongqi/"><strong>Yongqi Mao</strong></a>,
