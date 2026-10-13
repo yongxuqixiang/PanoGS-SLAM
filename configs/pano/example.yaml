@@ -1,0 +1,29 @@
+# PanoGS-SLAM – bundled example sequence (SynPano meetingroom, first 80 frames)
+#
+# Quick start:
+#   python slam.py --config configs/pano/example.yaml
+#   python slam.py --config configs/pano/example.yaml --eval
+#
+# The dataset ships with the repository under datasets/example/ (960x480 ERP).
+
+inherit_from: "configs/pano/base_config.yaml"
+
+Dataset:
+  dataset_path: "datasets/example"
+  dataset_path_image: "datasets/example/images"
+  mask_path:
+
+  fovx: 360
+  fovy: 180
+  width: 960
+  height: 480
+
+  opacity_region_boost: 1.0
+  pcd_downsample: 32
+  pcd_downsample_init: 32
+
+Training:
+  tracking_itr_num: 50
+  mapping_itr_num: 80
+  gaussian_update_every: 80
+  gaussian_update_offset: 40

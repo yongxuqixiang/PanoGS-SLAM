@@ -1,0 +1,32 @@
+# Datasets: the bundled example is uploaded, other datasets download separately (see README)
+datasets/*
+!datasets/example/
+data/
+
+# Pretrained weights (~1 GB, download separately, see README)
+BiFuse_Pretrained.pkl
+*.pkl
+
+# Run outputs
+results/
+eval_output/
+logs/
+wandb/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.eggs/
+
+# IDE / OS
+.vscode/
+.cursor/
+.idea/
+.DS_Store
+
+# Misc debug artifacts
+*.png~
+*_comparison.png

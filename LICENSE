@@ -1,0 +1,47 @@
+PanoGS-SLAM
+Copyright (c) 2026, Yongqi Mao, Hao Shi, Yufan Zhang, Zhonghua Yi, Xiangfei Guo, Kaiwei Wang
+Zhejiang University, National University of Defense Technology, Ant Group.
+All rights reserved.
+
+This software and its source code are licensed for academic, non-commercial
+research and educational purposes only.
+
+1. Grant of rights. Subject to the terms below, you may use, copy, modify,
+   and distribute this software solely for academic, non-commercial research
+   and educational purposes, and you may not use this software for any
+   commercial purpose without prior written permission from the authors.
+
+2. Third-party components. This repository builds upon and redistributes
+   several third-party components, each governed by its own license:
+   - gaussian_splatting/ (from https://github.com/graphdeco-inria/gaussian-splatting):
+     research-only, non-commercial license (see gaussian_splatting/LICENSE.md);
+   - submodules/odgs-gaussian-rasterization (derived from ODGS,
+     https://github.com/esw0116/odgs);
+   - submodules/diff-gaussian-rasterization-w-pose and submodules/simple-knn
+     (derived from 3D Gaussian Splatting / MonoGS,
+     https://github.com/muskie82/MonoGS);
+   - BiFuse (https://github.com/yuhsuanyeh/BiFuse);
+   - gui/gl_render (from GaussianSplattingViewer,
+     https://github.com/limacv/GaussianSplattingViewer).
+   Your use of these components is additionally restricted by their
+   respective licenses (see Dependencies.md).
+
+3. No warranty. This software is provided "as is", without warranty of any
+   kind, express or implied, including but not limited to the warranties of
+   merchantability, fitness for a particular purpose and noninfringement. In
+   no event shall the authors or copyright holders be liable for any claim,
+   damages or other liability, whether in an action of contract, tort or
+   otherwise, arising from, out of or in connection with the software or the
+   use or other dealings in the software.
+
+4. Attribution. If you use this software in your research, please cite:
+
+   @inproceedings{mao2026panogsslam,
+     title     = {{PanoGS-SLAM: Panoramic 3D Gaussian Splatting SLAM}},
+     author    = {Mao, Yongqi and Shi, Hao and Zhang, Yufan and Yi, Zhonghua
+                  and Guo, Xiangfei and Wang, Kaiwei},
+     booktitle = {IEEE/RSJ International Conference on Intelligent Robots
+                  and Systems (IROS)},
+     year      = {2026},
+     note      = {arXiv:2609.17387}
+   }

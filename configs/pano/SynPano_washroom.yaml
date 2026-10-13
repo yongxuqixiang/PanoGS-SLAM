@@ -1,0 +1,30 @@
+# PanoGS-SLAM – SynPano washroom (room4) config
+#
+# Usage:
+#   python slam.py --config configs/pano/SynPano_washroom.yaml --eval
+
+inherit_from: "configs/pano/base_config.yaml"
+
+Dataset:
+  dataset_path: "datasets/SynPano/washroom"
+  dataset_path_image: "datasets/SynPano/washroom/images_small"
+  mask_path:
+
+  fovx: 360
+  fovy: 180
+  width: 960
+  height: 480
+
+  opacity_region_boost: 1.0
+  pcd_downsample: 32
+  pcd_downsample_init: 32
+
+Training:
+  tracking_itr_num: 50
+  mapping_itr_num: 80
+  gaussian_update_every: 80
+  gaussian_update_offset: 40
+
+# v4: enable BiFuse depth prior (matches meetingroom success recipe)
+depth_estimation:
+  enabled: true

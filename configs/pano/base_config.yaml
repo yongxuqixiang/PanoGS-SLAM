@@ -1,0 +1,134 @@
+# Base configuration for panoramic (equirectangular) experiments.
+# Scene configs (SynPano.yaml / PALVIO.yaml) inherit from this file.
+
+# Monocular panoramic depth prior (BiFuse) used to bootstrap the Gaussian map
+depth_estimation:
+  enabled: true
+  pretrained_path: "BiFuse_Pretrained.pkl"
+  target_height: 512
+  target_width: 1024
+  depth_scale: 1.0
+  save_visualization: false
+
+Results:
+  save_results: True
+  save_dir: "results"
+  save_trj: true
+  save_trj_kf_intv: 10
+  use_gui: false
+  eval_rendering: true
+  use_wandb: False
+  # Frontend/backend pacing: saving intermediate renders slows the
+  # front-end down enough for the back-end map optimization to keep up.
+  # Keep these values unchanged for paper reproduction.
+  save_render_images: false
+  save_render_depth: false
+  render_images_interval: 1000
+  # Optional: render one fixed-viewpoint pinhole image every n frames with the
+  # GT/estimated trajectory drawn on top (visualization aid)
+  fixed_pinhole_render:
+    enabled: false
+    interval: 10000
+    save_dirname: "fixed_pinhole_render"
+    width: 960
+    height: 640
+    fx: 277.12812921102045
+    fy: 415.6921938165307
+    cx: 480.0
+    cy: 320.0
+    # Fixed-viewpoint extrinsics (TUM pose, 7 or 8 columns)
+    pose_tum: [0.042627, -0.073323, 1.407595, 0.002366, 0.002394, 0.039500, 0.999214]
+    znear: 0.05
+    zfar: 50.0
+    draw_estimated_traj: false
+    draw_gt_traj: false
+  # Pinhole projection used for rendering-quality evaluation
+  pinhole_intrinsics:
+    fx: 277.12812921102045
+    fy: 415.6921938165307
+    cx: 480.0
+    cy: 240.0
+    width: 960
+    height: 480
+    hfov_degrees: 120.0
+    vfov_degrees: 60.0
+
+Dataset:
+  type: 'pano'
+  sensor_type: 'Panoramic'
+  pcd_downsample: 16.0
+  pcd_downsample_init: 1.0
+  adaptive_pointsize: True
+  point_size: 0.01
+  start_frame: 0
+
+  opacity_threshold: 0.05
+  opacity_region_boost: 4.0
+
+Training:
+  init_itr_num: 200
+  init_gaussian_update: 20
+  init_gaussian_reset: 150
+  init_gaussian_th: 0.005
+  init_gaussian_extent: 30
+  # Front-end / back-end optimization iterations
+  tracking_itr_num: 15
+  mapping_itr_num: 30
+  # Gaussian growth / pruning cadence
+  gaussian_update_every: 30
+  gaussian_update_offset: 15
+  init_motion_threshold: 0.1
+  # Pruning thresholds: opacity and size
+  gaussian_th: 0.7
+  gaussian_extent: 1.0
+  gaussian_reset: 1001
+  size_threshold: 20
+  kf_interval: 5
+  window_size: 8
+  pose_window: 8
+  rgb_boundary_threshold: -0.05
+
+  kf_translation: 0.08
+  kf_min_translation: 0.05
+  kf_overlap: 0.93
+  kf_cutoff: 0.4
+  prune_mode: 'slam'
+  single_thread: False
+  spherical_harmonics: False
+  lr:
+    cam_rot_delta: 0.003
+    cam_trans_delta: 0.003
+  velocity_filter_alpha: 0.25
+
+  # Edge threshold used for the gradient mask
+  edge_threshold: 1.5
+
+opt_params:
+  iterations: 30000
+  position_lr_init: 0.0016
+  position_lr_final: 0.0000016
+  position_lr_delay_mult: 0.01
+  position_lr_max_steps: 30000
+  feature_lr: 0.0025
+  opacity_lr: 0.05
+  scaling_lr: 0.001
+  rotation_lr: 0.001
+  percent_dense: 0.01
+  lambda_dssim: 0.2
+  densification_interval: 100
+  opacity_reset_interval: 3000
+  densify_from_iter: 500
+  densify_until_iter: 15000
+  densify_grad_threshold: 0.0001
+
+model_params:
+  sh_degree: 0
+  source_path: ""
+  model_path: ""
+  resolution: -1
+  white_background: False
+  data_device: "cuda"
+
+pipeline_params:
+  convert_SHs_python: False
+  compute_cov3D_python: False

@@ -1,0 +1,26 @@
+# PanoGS-SLAM – SynPano livingroom (room1) config
+#
+# Usage:
+#   python slam.py --config configs/pano/SynPano_livingroom.yaml --eval
+
+inherit_from: "configs/pano/base_config.yaml"
+
+Dataset:
+  dataset_path: "datasets/SynPano/livingroom"
+  dataset_path_image: "datasets/SynPano/livingroom/images_small"
+  mask_path:
+
+  fovx: 360
+  fovy: 180
+  width: 960
+  height: 480
+
+  opacity_region_boost: 1.0
+  pcd_downsample: 8
+  pcd_downsample_init: 8
+
+Training:
+  tracking_itr_num: 100
+  mapping_itr_num: 150
+  gaussian_update_every: 40
+  gaussian_update_offset: 20

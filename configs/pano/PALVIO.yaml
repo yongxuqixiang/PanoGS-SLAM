@@ -1,0 +1,40 @@
+# PanoGS-SLAM – PALVIO benchmark config
+#
+# Usage:
+#   python slam.py --config configs/pano/PALVIO.yaml --eval
+#
+# To run on a different PALVIO sequence, change:
+#   dataset_path      → datasets/PALVIO/IDxx
+#   dataset_path_image → datasets/PALVIO/IDxx/pro_images_test
+#
+# All PALVIO sequences (ID01–ID10) share the same hyper-parameters.
+# The mask is required: PAL cameras have ~25% blind-zone pixels (pure black).
+
+inherit_from: "configs/pano/base_config.yaml"
+
+Dataset:
+  dataset_path: "datasets/PALVIO/ID02"
+  dataset_path_image: "datasets/PALVIO/ID02/pro_images_test"
+  # Mask for PAL camera blind zones – REQUIRED for all PALVIO sequences
+  mask_path: "mask/mask.png"
+
+  fovx: 360
+  fovy: 180
+  width: 1024
+  height: 512
+
+  opacity_region_boost: 1.0
+  pcd_downsample_init: 16
+
+Training:
+  tracking_itr_num: 50
+  mapping_itr_num: 50
+  gaussian_update_every: 50
+  gaussian_update_offset: 25
+
+opt_params:
+  densify_grad_threshold: 0.0002
+
+# PALVIO does not need BiFuse monocular depth prior
+depth_estimation:
+  enabled: false
