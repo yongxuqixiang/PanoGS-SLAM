@@ -37,7 +37,7 @@ Requirements: NVIDIA GPU (CUDA 11.6), [Anaconda](https://www.anaconda.com/).
 
 ```bash
 # 1. Clone the repository (BiFuse is bundled, no submodules needed)
-git clone https://github.com/<your-org>/PanoGS-SLAM.git
+git clone https://github.com/yongxuqixiang/PanoGS-SLAM.git
 cd PanoGS-SLAM
 
 # 2. Create the conda environment
