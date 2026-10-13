@@ -19,12 +19,6 @@
   <p align="center">
     <video src="https://github.com/user-attachments/assets/c9a58b97-0ae1-4cf7-a70d-96b524f3628c" controls muted width="860"></video>
   </p>
-
-  <p align="center">
-    <a href="https://arxiv.org/abs/2609.17387"><img alt="arXiv" src="https://img.shields.io/badge/arXiv-2609.17387-b31b1b.svg"></a>
-    <a href="https://www.iros.org/"><img alt="IROS 2026" src="https://img.shields.io/badge/IROS-2026-6A8759.svg"></a>
-    <a href="#license"><img alt="license" src="https://img.shields.io/badge/license-non--commercial-orange.svg"></a>
-  </p>
 </p>
 
 ---
