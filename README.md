@@ -1,3 +1,4 @@
+
 <p align="center">
   <h1 align="center">PanoGS-SLAM</h1>
   <h3 align="center">Panoramic 3D Gaussian Splatting SLAM</h3>
@@ -16,14 +17,8 @@
     <a href="https://arxiv.org/abs/2609.17387">Paper (arXiv)</a>
   </p>
 
-  <!--
-    Tip: for inline playback on GitHub, upload the mp4 to any issue/PR and
-    replace the link below with the generated
-    https://github.com/user-attachments/... URL, e.g.
-    <video src="https://github.com/user-attachments/..." controls muted width="860"></video>
-  -->
   <p align="center">
-    <a href="media/demo.mp4">📹 <strong>Demo video</strong> (click to play)</a>
+    <video src="https://github.com/user-attachments/assets/c9a58b97-0ae1-4cf7-a70d-96b524f3628c" controls muted width="860"></video>
   </p>
 
   <p align="center">
