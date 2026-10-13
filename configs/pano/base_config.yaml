@@ -24,24 +24,6 @@ Results:
   save_render_images: false
   save_render_depth: false
   render_images_interval: 1000
-  # Optional: render one fixed-viewpoint pinhole image every n frames with the
-  # GT/estimated trajectory drawn on top (visualization aid)
-  fixed_pinhole_render:
-    enabled: false
-    interval: 10000
-    save_dirname: "fixed_pinhole_render"
-    width: 960
-    height: 640
-    fx: 277.12812921102045
-    fy: 415.6921938165307
-    cx: 480.0
-    cy: 320.0
-    # Fixed-viewpoint extrinsics (TUM pose, 7 or 8 columns)
-    pose_tum: [0.042627, -0.073323, 1.407595, 0.002366, 0.002394, 0.039500, 0.999214]
-    znear: 0.05
-    zfar: 50.0
-    draw_estimated_traj: false
-    draw_gt_traj: false
   # Pinhole projection used for rendering-quality evaluation
   pinhole_intrinsics:
     fx: 277.12812921102045

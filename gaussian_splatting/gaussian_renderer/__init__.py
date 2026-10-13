@@ -12,11 +12,6 @@
 import math
 import time
 import torch
-# myq
-# from diff_gaussian_rasterization import (
-#     GaussianRasterizationSettings,
-#     GaussianRasterizer,
-# )
 from odgs_gaussian_rasterization import (
     GaussianRasterizationSettings,
     GaussianRasterizer,

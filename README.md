@@ -45,7 +45,6 @@ conda env create -f environment.yml
 conda activate panogs
 
 # 3. Compile the CUDA rasterizers
-pip install submodules/diff-gaussian-rasterization-w-pose
 pip install submodules/odgs-gaussian-rasterization
 pip install submodules/simple-knn
 
