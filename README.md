@@ -16,10 +16,9 @@
     <a href="https://arxiv.org/abs/2609.17387">Paper (arXiv)</a>
   </p>
 
-  <p align="center">
-    <video src="https://github.com/user-attachments/assets/c9a58b97-0ae1-4cf7-a70d-96b524f3628c" controls muted width="860"></video>
-  </p>
 </p>
+
+https://github.com/user-attachments/assets/c9a58b97-0ae1-4cf7-a70d-96b524f3628c
 
 ---
 
