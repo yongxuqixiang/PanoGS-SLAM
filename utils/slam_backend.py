@@ -435,6 +435,11 @@ class BackEnd(mp.Process):
 
         return gaussian_split
 
+    @staticmethod
+    def _parent_alive():
+        """Detect that the main process died (e.g. SIGKILL) and we are orphaned."""
+        return os.getppid() != 1
+
     def color_refinement(self):
         Log("Starting color refinement")
 
@@ -468,6 +473,9 @@ class BackEnd(mp.Process):
                 self.gaussians.optimizer.step()
                 self.gaussians.optimizer.zero_grad(set_to_none=True)
                 self.gaussians.update_learning_rate(iteration)
+        # Drop the transient render buffers of the last iteration before the
+        # map is handed back to the frontend.
+        torch.cuda.empty_cache()
         Log("Map refinement done")
 
     def push_to_frontend(self, tag=None):
@@ -489,6 +497,9 @@ class BackEnd(mp.Process):
 
     def run(self):
         while True:
+            if not self._parent_alive():
+                Log("Parent process is gone, backend shutting down to free VRAM")
+                break
             if self.backend_queue.empty():
                 if self.pause:
                     time.sleep(0.01)
@@ -606,4 +617,8 @@ class BackEnd(mp.Process):
             self.backend_queue.get()
         while not self.frontend_queue.empty():
             self.frontend_queue.get()
+        self.gaussians = None
+        self.viewpoints = {}
+        self.keyframe_optimizers = None
+        torch.cuda.empty_cache()
         return

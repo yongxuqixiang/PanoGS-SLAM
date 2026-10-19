@@ -1,4 +1,6 @@
+import atexit
 import os
+import signal
 import sys
 import time
 from argparse import ArgumentParser
@@ -31,6 +33,13 @@ class SLAM:
 
         self.config = config
         self.save_dir = save_dir
+        self._shutdown_done = False
+        self.backend_process = None
+        self.gui_process = None
+        # Last-resort safety net: whatever path the process leaves by (normal
+        # end, exception, SIGTERM), the workers are stopped and their CUDA
+        # contexts released instead of being left behind as orphans.
+        atexit.register(self._atexit_shutdown)
         model_params = munchify(config["model_params"])
         opt_params = munchify(config["opt_params"])
         pipeline_params = munchify(config["pipeline_params"])
@@ -102,9 +111,17 @@ class SLAM:
             q_vis2main=q_vis2main,
         )
 
-        backend_process = mp.Process(target=self.backend.run)
+        # Worker processes are daemonised and their handles are kept on `self`
+        # so that an aborted run can never leave orphaned children holding on
+        # to CUDA contexts (which shows up as leaked VRAM in nvidia-smi).
+        self.backend_process = mp.Process(target=self.backend.run, daemon=True)
+        self.gui_process = None
+        backend_process = self.backend_process
         if self.use_gui:
-            gui_process = mp.Process(target=slam_gui.run, args=(self.params_gui,))
+            self.gui_process = mp.Process(
+                target=slam_gui.run, args=(self.params_gui,), daemon=True
+            )
+            gui_process = self.gui_process
             gui_process.start()
             time.sleep(5)
 
@@ -113,7 +130,12 @@ class SLAM:
         backend_process.start()
         # myq
         print("start front")
-        self.frontend.run()
+        try:
+            self.frontend.run()
+        except BaseException:
+            Log("Frontend aborted, shutting down worker processes")
+            self.shutdown_workers()
+            raise
         backend_queue.put(["pause"])
 
         end.record()
@@ -202,16 +224,67 @@ class SLAM:
             wandb.log({"Metrics": metrics_table})
             save_gaussians(self.gaussians, self.save_dir, "final_after_opt", final=True)
 
-        backend_queue.put(["stop"])
-        backend_process.join()
-        Log("Backend stopped and joined the main thread")
-        if self.use_gui:
-            q_main2vis.put(gui_utils.GaussianPacket(finish=True))
-            gui_process.join()
-            Log("GUI Stopped and joined the main thread")
+        self.shutdown_workers()
 
     def run(self):
         pass
+
+    def shutdown_workers(self):
+        """Stop the worker processes and release CUDA / queue resources.
+
+        Idempotent: called both on the normal exit path and from the exception
+        path, so a crash or Ctrl-C cannot leak VRAM through orphaned children.
+        """
+        if self._shutdown_done:
+            return
+        self._shutdown_done = True
+
+        if self.use_gui and self.gui_process is not None and self.gui_process.is_alive():
+            try:
+                self.q_main2vis.put(gui_utils.GaussianPacket(finish=True))
+            except Exception as e:
+                Log(f"Failed to notify the GUI process: {e}")
+
+        if self.backend_process is not None and self.backend_process.is_alive():
+            try:
+                self.backend_queue.put(["stop"])
+            except Exception as e:
+                Log(f"Failed to notify the backend process: {e}")
+
+        for name, proc in (
+            ("Backend", self.backend_process),
+            ("GUI", self.gui_process),
+        ):
+            if proc is None:
+                continue
+            proc.join(timeout=15.0)
+            if proc.is_alive():
+                Log(f"{name} process did not exit in time, terminating")
+                proc.terminate()
+                proc.join(timeout=5.0)
+            if proc.is_alive():
+                proc.kill()
+                proc.join(timeout=5.0)
+            if proc.is_alive():
+                Log(f"{name} process is still alive after kill, VRAM may leak")
+            else:
+                Log(f"{name} stopped and joined the main thread")
+
+        # Release any CUDA memory held by this process (including IPC handles
+        # shared with the workers) before the interpreter exits.
+        try:
+            if torch.cuda.is_available():
+                torch.cuda.ipc_collect()
+                torch.cuda.empty_cache()
+        except Exception:
+            pass
+
+    def _atexit_shutdown(self):
+        """atexit wrapper: never let a shutdown error mask the real one."""
+        try:
+            self.shutdown_workers()
+        except Exception:
+            pass
 
 
 if __name__ == "__main__":
@@ -221,6 +294,15 @@ if __name__ == "__main__":
     parser.add_argument("--eval", action="store_true")
 
     args = parser.parse_args(sys.argv[1:])
+
+    assert args.config is not None, "--config is required"
+
+    def _handle_termination(signum, _frame):
+        # Turn SIGTERM into a normal exception so that the try/finally path in
+        # SLAM can terminate the workers and release their CUDA contexts.
+        raise SystemExit(f"Received signal {signum}")
+
+    signal.signal(signal.SIGTERM, _handle_termination)
 
     mp.set_start_method("spawn")
 
@@ -272,9 +354,15 @@ if __name__ == "__main__":
         wandb.define_metric("frame_idx")
         wandb.define_metric("ate*", step_metric="frame_idx")
 
-    slam = SLAM(config, save_dir=save_dir)
-
-    slam.run()
+    slam = None
+    try:
+        slam = SLAM(config, save_dir=save_dir)
+        slam.run()
+    finally:
+        # Covers failures raised after the frontend loop (evaluation, saving),
+        # which would otherwise leave the backend process holding VRAM.
+        if slam is not None:
+            slam.shutdown_workers()
     wandb.finish()
 
     # All done

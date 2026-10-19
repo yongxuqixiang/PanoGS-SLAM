@@ -1,3 +1,4 @@
+import os
 import pathlib
 import sys
 import threading
@@ -695,7 +696,7 @@ class SLAM_GUI:
         while True:
             time.sleep(0.01)
             self.step += 1
-            if self.process_finished:
+            if self.process_finished or os.getppid() == 1:
                 o3d.visualization.gui.Application.instance.quit()
                 Log("Closing Visualization", tag="GUI")
                 break
